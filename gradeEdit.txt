@@ -1,0 +1,142 @@
+
+<?php 
+$grdTitle = "";
+
+foreach($editGradeDetail as $v ) 
+{
+	$grdTitle = $v['name']; 
+}
+
+?>
+
+<section class="panel">
+	<div class="tabs-custom">
+		<ul class="nav nav-tabs">
+			<li>
+				<a href="<?=base_url('exam/grade')?>"><i class="fas fa-list-ul"></i> <?=translate('grade_list')?></a>
+			</li>
+			<li class="active">
+				<a href="#edit" data-toggle="tab" ><i class="far fa-edit"></i> <?=translate('edit_grade')?></a>
+			</li>
+		</ul>
+		<div class="tab-content">
+			<div class="tab-pane active" id="edit">
+				
+				
+				<?php if (is_superadmin_loggedin()): ?>
+				<div class="form-group">
+					<label class="col-md-3 control-label"><?=translate('branch')?> <span class="required">*</span></label>
+					<div class="col-md-6">
+						<?php
+							$arrayBranch = $this->app_lib->getSelectList('branch');
+							echo form_dropdown("branch_id", $arrayBranch, $grade['branch_id'], "class='form-control'
+							data-plugin-selectTwo data-width='100%' data-minimum-results-for-search='Infinity'");
+						?>
+						<span class="error"></span>
+					</div>
+				</div>
+				<?php endif; ?>
+				
+				<div class="row">
+					
+					<div class="col-md-6">
+						<label class="control-label"><?=translate('Grade Title')?> <span class="required">*</span></label>
+						<input type="text" class="form-control" name="title" id="title" value="<?php echo $grdTitle ?>">
+					</div>
+				</div>
+				<br/>
+				<form id="frmgrade">
+					<table  class="table table-bordered table-hover mb-none">
+							<thead>
+								<tr>
+									<th><?=translate('Grade Point')?></th>
+									<th><?=translate('lower Mark')?></th>
+									<th><?=translate('Upper Mark')?></th>
+									<th><?=translate('Remark')?></th>
+								</tr>
+							</thead>
+							<tbody id="grdTable">
+								<?php
+								$number = 0;
+								 if(!empty($editGradeDetail)) {
+									foreach($editGradeDetail as $key => $v )
+									{ ?>
+								<tr>
+									<td>
+										<input type="hidden" id="gp" name="id[<?php echo $v['id'] ?>][<?php echo $key;?>]"
+										 name="gp[<?php echo $v['id'] ?>][<?php echo $key;?>]" value="<?php echo $v['id']?>">
+										<input type="text" name="gp[<?php echo $v['id'] ?>][<?php echo $key;?>]" class="form-control col-md-3" value="<?php echo $v['grade_point'] ?>">
+									</td>	
+									<td>
+										<input type="text" id="lm" name="lm[<?php echo $v['id'] ?>][<?php echo $key;?>]" class="form-control col-md-3" value="<?php echo $v['lower_mark'] ?>">
+									</td>
+									<td>
+										<input type="text" id="um" name="um[<?php echo $v['id'] ?>][<?php echo $key;?>]" class="form-control col-md-3" value="<?php echo $v['upper_mark'] ?>">
+									</td>
+									<td>
+										<input type="text" id="rmk" name="rmk[<?php echo $v['id'] ?>][<?php echo $key;?>]" class="form-control col-md-3" value="<?php echo $v['remark'] ?>">
+									</td>
+								</tr>
+								<?php
+								$number = $key +1;
+							 }} 
+							 ?>
+							
+							
+							</tbody>
+							
+					</table>
+					<table>
+						<tr>
+									<td colspan="2">
+										<button type="submit" class="btn btn-default btn-block" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
+										<i class="fas fa-plus-circle"></i> <?=translate('update')?>
+										</button>
+									</td>
+									<td colspan="2">
+										<button type="button" numberId ='<?php echo $number;?>'  class="btn btn-default btn-block addGrade_btn" data-loading-text="<i class='fas fa-spinner fa-spin'></i> Processing">
+									<i class="fas fa-plus-circle"></i> <?=translate('Add Grade')?>
+								</button>
+									</td>
+								</tr>
+							</table>
+				</form>
+				
+			</div>
+		</div>
+	</div>
+</section>
+
+<script>
+
+	$(".addGrade_btn").click(function(){
+	var button = $(this);
+    var currentNumberId = parseInt(button.attr("numberId")); 
+    var updatedNumberId = currentNumberId + 1; // Calculate the updated value
+    button.attr("numberId", updatedNumberId);
+
+
+
+
+ var title = $("#title").val(); 
+ var gp = $("#gp").val(); 
+ var html = '';
+ html ='<tr><td><input type="text" class="form-control col-md-3"  name="gp['+gp+']['+currentNumberId+']"></td><td><input type="text" name="lm['+gp+']['+currentNumberId+']" class="form-control col-md-3" ></td><td><input type="text" name="um['+gp+']['+currentNumberId+']" class="form-control col-md-3"> </td><td><input type="text" name="rmk['+gp+']['+currentNumberId+']" class="form-control col-md-3"></td></tr>'; 
+
+ $("#grdTable").append(html);
+
+});
+
+$("#frmgrade").on("submit",function(e){
+	e.preventDefault();
+	$.ajax({
+		url  : '<?=base_url()?>exam/updateallgrdbybranch',
+		type : 'post',
+		data : $("#frmgrade").serialize(),
+		success : function (res)
+		{
+			console.log(res);
+		}
+	});
+});
+</script>

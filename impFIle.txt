@@ -1,0 +1,31 @@
+
+exam_master
+id	exam_name	session_id
+1	weeklyr1	2023-24
+
+exam_detail 
+id	exam_id		std_id	sub_id	passing_mark,
+
+
+
+mark_entry
+exam_detail_id	student_id	sub_id	ob_mark	 ob_atte
+
+running db
+=========
+exam_detail
+
+    $post = $this->input->post();
+                $this->exam_model->gradeSave($post);
+                set_alert('success', translate('information_has_been_updated_successfully'));
+                $url = base_url('exam/grade');
+                $array = array('status' => 'success', 'url' => $url);
+
+
+$this->db->last_query()
+$branch_id=$this->session->userdata('loggedin_branch');
+        // $session_id=$this->session->userdata('set_session_id');
+
+	
+	
+
